@@ -12,32 +12,26 @@ with st.container():
     st.write('저의 유튜브에 다양한 기업 분석 콘텐츠가 있습니다. 함께 성장합시다!')
     st.write('[여기를 눌러보세요!](https://www.youtube.com/@hyunsight101)')
 
-# What I do
 with st.container():
     st.write('---')
+    st.header('주식 포트폴리오 공개')
+    st.markdown("<br>", unsafe_allow_html=True)  # 적당한 공백
+    st.write(
+        """
+        제가 실제 보유 중인 종목들과 포트폴리오 평가금액 추이입니다.
+        한국 주식도 정말 하고 싶은데, 가족 중 회계법인에 근무하는 분이 있어 그와 관련한 문제가 있어 하지 못하고 있습니다. :sob:
+        """
+    )
+
+import yfinance as yf
+import matplotlib.pyplot as plt
+import pandas as pd
+
+with st.container():
     left_column, right_column = st.columns(2)
-    with left_column:
-        st.header('What I do')
-        st.markdown("<br>", unsafe_allow_html=True)  # 적당한 공백
-        st.write(
-            """
-            On my YouTube channel, I share my value-investing stock analysis with you.
-            - I am just a beginner. Sure, my analysis may not be correct with a high possibility.
-            - But I grow and grow every day, and I believe that eventually I would be an 'intelligent investor' someday.
-
-            If this sounds interesting to you, consider subscribing and turning on the notifications!
-            """
-        )
-        st.write('[YouTube Channel >](https://www.youtube.com/@hyunsight101)')
     
-    # 오른쪽에 그래프 추가
-    with right_column:
-        import yfinance as yf
-        import matplotlib.pyplot as plt
-        import pandas as pd
-
-        # 예시 날짜 (최근 10 영업일)
-        dates = pd.date_range(start="2025-08-01", periods=10, freq="B")
+    with left_column:
+        dates = pd.date_range(start="2025-08-01", freq="B")
 
         # 보유 주식 수
         shares = {
@@ -75,3 +69,22 @@ with st.container():
         ax.grid(True)
 
         st.pyplot(fig)
+    with right_column:
+        # 가장 최근 날짜 기준 각 종목 평가 금액
+        latest_values = values.iloc[-1]
+        
+        # Streamlit 스타일의 원그래프
+        fig, ax = plt.subplots(figsize=(7,7))
+        ax.pie(
+            latest_values,
+            labels=latest_values.index,
+            autopct='%1.1f%%',
+            startangle=140,
+            colors=plt.cm.tab20.colors
+        )
+        ax.set_title("Portfolio Composition by Latest Value")
+        ax.axis('equal')  # 원형 비율 유지
+        
+        st.pyplot(fig)
+
+        
