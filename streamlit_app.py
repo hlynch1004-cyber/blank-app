@@ -31,7 +31,7 @@ with st.container():
     left_column, right_column = st.columns(2)
     
     with left_column:
-        dates = pd.date_range(start="2025-08-01", end=pd.Timestamp.today(), freq="B")
+        dates = pd.date_range(start="2025-08-18", end=pd.Timestamp.today(), freq="B")
 
         # 보유 주식 수
         shares = {
