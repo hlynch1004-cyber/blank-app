@@ -6,7 +6,7 @@ st.set_page_config(page_title='My Webpage', page_icon=':tada:', layout='wide')
 
 # Header Section
 with st.container():
-    st.subheader('Hi, I am Hyun-woo. :wave:')
+    st.subheader('반갑습니다. 이온입니다. :smiling_face_with_smiling_eyes:')
     st.title('An Enterpreneur from Korea')
     st.write('I am passionate about stock markets.')
     st.write('To learn more, visit my Instagram. (https://www.instagram.com/hyun.woo1019/)') 
