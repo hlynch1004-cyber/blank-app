@@ -10,7 +10,7 @@ with st.container():
     st.title('현명한 가치 투자자가 되고자 합니다.')
     st.write('저평가 성장주를 장기 보유하려고 합니다.')
     st.write('저의 유튜브에 다양한 기업 분석 콘텐츠가 있습니다. 함께 성장합시다!')
-    st.write('여기를 눌러보세요!(https://www.youtube.com/@hyunsight101)')
+    st.write('[여기를 눌러보세요!](https://www.youtube.com/@hyunsight101)')
 
 # What I do
 with st.container():
