@@ -6,10 +6,11 @@ st.set_page_config(page_title='My Webpage', page_icon=':tada:', layout='wide')
 
 # Header Section
 with st.container():
-    st.subheader('반갑습니다. 이온입니다. :smiling_face_with_smiling_eyes:')
-    st.title('An Enterpreneur from Korea')
-    st.write('I am passionate about stock markets.')
-    st.write('To learn more, visit my Instagram. (https://www.instagram.com/hyun.woo1019/)') 
+    st.subheader('반갑습니다. 이온입니다. :blush:')
+    st.title('현명한 가치 투자자가 되고자 합니다.')
+    st.write('저평가 성장주를 장기 보유하려고 합니다.')
+    st.write('저의 유튜브에 다양한 기업 분석 콘텐츠가 있습니다. 함께 성장합시다!')
+    st.write('여기를 눌러보세요!(https://www.youtube.com/@hyunsight101)')
 
 # What I do
 with st.container():
