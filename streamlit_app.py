@@ -2,7 +2,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 
-st.set_page_config(page_title='My Webpage', page_icon=':tada:', layout='wide')
+st.set_page_config(page_title='투자독학 포트폴리오', page_icon=':teddy_bear:', layout='wide')
 
 # Header Section
 with st.container():
