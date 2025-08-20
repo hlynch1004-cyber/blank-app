@@ -87,11 +87,11 @@ with st.container():
         
         st.pyplot(fig)
 
-img1 = "https://via.placeholder.com/150"
-img2 = "https://via.placeholder.com/150"
-img3 = "https://via.placeholder.com/150"
-img4 = "https://via.placeholder.com/150"
-img5 = "https://via.placeholder.com/150"  # 5번째 이미지
+img1 = "https://github.com/hlynch1004-cyber/blank-app/blob/main/GAMB_financials_rolling_CAGR.png?raw=true"
+img2 = "https://github.com/hlynch1004-cyber/blank-app/blob/main/7095.T_financials_rolling_CAGR.png?raw=true"
+img3 = "https://github.com/hlynch1004-cyber/blank-app/blob/main/RERE_financials_rolling_CAGR.png?raw=true"
+img4 = "https://github.com/hlynch1004-cyber/blank-app/blob/main/MRNA_financials_rolling_CAGR.png?raw=true"
+img5 = "https://github.com/hlynch1004-cyber/blank-app/blob/main/ZIM_financials_rolling_CAGR.png?raw=true"  # 5번째 이미지
 
 with st.container():
     st.write('---')
