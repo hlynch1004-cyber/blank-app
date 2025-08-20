@@ -19,7 +19,7 @@ with st.container():
     st.write(
         """
         제가 실제 보유 중인 종목들과 포트폴리오 평가금액 추이입니다.
-        한국 주식도 정말 하고 싶은데, 회계법인 관련 문제로 하지 못하고 있습니다. :sob:
+        한국 주식도 정말 하고 싶은데, 가족의 회계법인 관련 문제로 하지 못하고 있습니다. :sob:
         """
     )
 
@@ -87,4 +87,29 @@ with st.container():
         
         st.pyplot(fig)
 
-        
+img1 = "https://via.placeholder.com/150"
+img2 = "https://via.placeholder.com/150"
+img3 = "https://via.placeholder.com/150"
+img4 = "https://via.placeholder.com/150"
+img5 = "https://via.placeholder.com/150"  # 5번째 이미지
+
+with st.container():
+    st.write('---')
+    st.header('종목별 이익 그래프')
+
+    # 1행: 2열
+    col1, col2 = st.columns(2)
+    with col1:
+        st.image(img1, caption="Gambling.com Group Limited (GAMB)")
+    with col2:
+        st.image(img2, caption="Macbee Planet, Inc. (7095)")
+    
+    # 2행: 2열
+    col3, col4 = st.columns(2)
+    with col3:
+        st.image(img3, caption="ATRenew Inc. (RERE)")
+    with col4:
+        st.image(img4, caption="Moderna, Inc. (MRNA)")
+    
+    # 3행: 1열
+    st.image(img5, caption="ZIM Integrated Shipping Services Ltd. (ZIM)")
