@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 st.set_page_config(page_title='투자독학 포트폴리오', page_icon=':teddy_bear:', layout='wide')
 
 # 상단 로고 (예시 URL, 필요시 본인 로고 URL 또는 로컬 경로로 변경)
-st.image("https://github.com/hlynch1004-cyber/blank-app/blob/main/%EB%8D%B0%EC%9D%B4%ED%84%B0/%EB%A1%9C%EA%B3%A0.png?raw=true", width=150)
+st.image("https://github.com/hlynch1004-cyber/blank-app/blob/main/%EB%8D%B0%EC%9D%B4%ED%84%B0/%EB%A1%9C%EA%B3%A0.png?raw=true", width=500)
 
 # 탭 생성
 tab_home, tab_portfolio, tab_financials = st.tabs(["홈", "포트폴리오", "종목별 이익"])
