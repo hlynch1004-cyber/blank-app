@@ -137,7 +137,7 @@ with tab_virtual_portfolio:
         "기업명": virtual_company,
         "티커 코드": virtual_ticker,
         "(가상) 투자 결정일": invest_date.strftime("%Y-%m-%d"),
-        "현재까지의 수익률": f"{return_rate:.2f}%"
+        "현재까지의 수익률": f"{float(return_rate):.2f}%"
     }])
 
     st.dataframe(df_virtual, use_container_width=True)
