@@ -119,7 +119,7 @@ with tab_virtual_portfolio:
     # 가상 투자 설정
     virtual_ticker = "ACN"
     virtual_company = "Accenture plc"
-    invest_date = pd.Timestamp("2025-08-21")
+    invest_date = pd.Timestamp("2025-08-22")
 
     # 가격 데이터 가져오기
     prices_v = yf.download(
