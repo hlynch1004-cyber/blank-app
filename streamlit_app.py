@@ -112,6 +112,8 @@ with tab_financials:
 with tab_virtual_portfolio:
     st.header('가상 포트폴리오 시뮬레이션')
 
+    st.write("자금을 넣어보고 싶지만 현실적인 금액 부족 때문에 넣지 못하는 종목들의 장기 수익률을 관찰하기 위한 탭입니다.")
+
     # 가상 투자 설정
     virtual_ticker = "ACN"
     virtual_company = "Accenture plc"
