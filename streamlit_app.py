@@ -23,7 +23,7 @@ with tab_home:
 with tab_portfolio:
     st.header('주식 포트폴리오 공개')
     # st.write('---')
-    st.write('제가 실제 보유 중인 종목들과 포트폴리오 평가금액 추이입니다. 한국 주식도 정말 하고 싶은데, 가족의 회계법인 관련 문제로 하지 못하고 있습니다. :sob:")
+    st.write("제가 실제 보유 중인 종목들과 포트폴리오 평가금액 추이입니다. 한국 주식도 정말 하고 싶은데, 가족의 회계법인 관련 문제로 하지 못하고 있습니다. :sob:")
 
     left_column, right_column = st.columns(2)
     
