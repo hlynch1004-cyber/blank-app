@@ -134,7 +134,7 @@ with tab_virtual_portfolio:
     return_rate = (latest_price - entry_price) / entry_price * 100
 
     # 표 생성
-    st.subheader("가상 포트폴리오 현황")
+    # st.subheader("가상 포트폴리오 현황")
     df_virtual = pd.DataFrame([{
         "기업명": virtual_company,
         "티커 코드": virtual_ticker,
