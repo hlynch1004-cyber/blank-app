@@ -116,32 +116,71 @@ with tab_virtual_portfolio:
 
     st.write("자금을 넣어보고 싶지만 현실적인 금액 부족 때문에 넣지 못하는 종목들의 장기 수익률을 관찰하기 위한 탭입니다.")
 
-    # 가상 투자 설정
-    virtual_ticker = "ACN"
-    virtual_company = "Accenture plc"
-    invest_date = pd.Timestamp("2025-08-22")
+    # 서브 탭 생성
+    tab_value, tab_quant = st.tabs(["① 가치 투자 포트폴리오", "② 퀀트 투자 포트폴리오"])
 
-    # 가격 데이터 가져오기
-    prices_v = yf.download(
-        virtual_ticker, 
-        start=invest_date, 
-        end=pd.Timestamp.today() + pd.Timedelta(days=1)
-    )["Close"]
+    # ---------------- 가치 투자 포트폴리오 ----------------
+    with tab_value:
+        st.subheader("가치 투자 포트폴리오")
 
-    # 투자일 기준 종가와 최신 종가
-    entry_price = prices_v.iloc[0]
-    latest_price = prices_v.iloc[-1]
+        virtual_ticker = "ACN"
+        virtual_company = "Accenture plc"
+        invest_date = pd.Timestamp("2025-08-22")
 
-    # 수익률 계산
-    return_rate = (latest_price - entry_price) / entry_price * 100
+        # 가격 데이터 가져오기
+        prices_v = yf.download(
+            virtual_ticker, 
+            start=invest_date, 
+            end=pd.Timestamp.today() + pd.Timedelta(days=1)
+        )["Close"]
 
-    # 표 생성
-    # st.subheader("가상 포트폴리오 현황")
-    df_virtual = pd.DataFrame([{
-        "기업명": virtual_company,
-        "티커 코드": virtual_ticker,
-        "(가상) 투자 결정일": invest_date.strftime("%Y-%m-%d"),
-        "현재까지의 수익률": f"{float(return_rate):.2f}%"
-    }])
+        # 투자일 기준 종가와 최신 종가
+        entry_price = prices_v.iloc[0]
+        latest_price = prices_v.iloc[-1]
 
-    st.dataframe(df_virtual, use_container_width=True)
+        # 수익률 계산
+        return_rate = (latest_price - entry_price) / entry_price * 100
+
+        # 표 생성
+        df_virtual = pd.DataFrame([{
+            "기업명": virtual_company,
+            "티커 코드": virtual_ticker,
+            "(가상) 투자 결정일": invest_date.strftime("%Y-%m-%d"),
+            "현재까지의 수익률": f"{float(return_rate):.2f}%"
+        }])
+
+        st.dataframe(df_virtual, use_container_width=True)
+
+    # ---------------- 퀀트 투자 포트폴리오 ----------------
+    with tab_quant:
+        st.subheader("퀀트 투자 포트폴리오")
+
+        quant_tickers = ["SNYR", "NCSM", "AXR", "FRD", "RELL", "PMTS", "IPI", "ZEUS", "SD", "NATH"]
+        invest_date = pd.Timestamp("2025-08-22")
+
+        results = []
+        for ticker in quant_tickers:
+            prices_q = yf.download(
+                ticker,
+                start=invest_date,
+                end=pd.Timestamp.today() + pd.Timedelta(days=1)
+            )["Close"]
+
+            if len(prices_q) > 0:
+                entry_price = prices_q.iloc[0]
+                latest_price = prices_q.iloc[-1]
+                return_rate = (latest_price - entry_price) / entry_price * 100
+                results.append({
+                    "티커 코드": ticker,
+                    "(가상) 투자 결정일": invest_date.strftime("%Y-%m-%d"),
+                    "현재까지의 수익률": f"{float(return_rate):.2f}%"
+                })
+            else:
+                results.append({
+                    "티커 코드": ticker,
+                    "(가상) 투자 결정일": invest_date.strftime("%Y-%m-%d"),
+                    "현재까지의 수익률": "데이터 없음"
+                })
+
+        df_quant = pd.DataFrame(results)
+        st.dataframe(df_quant, use_container_width=True)
