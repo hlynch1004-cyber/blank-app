@@ -83,6 +83,8 @@ with tab_portfolio:
 with tab_financials:
     st.header('종목별 이익 그래프')
 
+    st.write("포트폴리오를 구성하는 각 종목의 매출액, 순이익, 영업 현금 흐름을 겹쳐본 그림입니다. 장기적인 성장 추세를 확인할 수 있습니다.")
+
     img1 = "https://github.com/hlynch1004-cyber/blank-app/blob/main/GAMB_financials_rolling_CAGR.png?raw=true"
     img2 = "https://github.com/hlynch1004-cyber/blank-app/blob/main/7095.T_financials_rolling_CAGR.png?raw=true"
     img3 = "https://github.com/hlynch1004-cyber/blank-app/blob/main/RERE_financials_rolling_CAGR.png?raw=true"
