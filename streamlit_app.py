@@ -187,92 +187,67 @@ with tab_virtual_portfolio:
 
 # ======= 마켓맵 탭 =======
 with tab_marketmap:
-    st.header("코스피/코스닥 마켓 맵")
+    st.header("📊 KOSPI/KOSDAQ 마켓 맵")
 
     import requests
     import time
+    import pandas as pd
     import plotly.express as px
+    import FinanceDataReader as fdr
 
-    # ----------------------------------
-    # 유틸 함수
-    # ----------------------------------
-    def _http_get(url: str, headers: dict | None = None, params: dict | None = None):
-        h = {
-            "User-Agent": "Mozilla/5.0",
-            "Accept": "application/json, text/plain, */*",
-            "Referer": "https://finance.naver.com/",
-        }
-        if headers:
-            h.update(headers)
-        r = requests.get(url, headers=h, params=params, timeout=20)
-        r.raise_for_status()
-        return r
-
-    def get_snapshot_by_naver(code: str):
-        """네이버 현재가 요약 API"""
-        try:
-            url = f"https://api.stock.naver.com/stock/{code}/basic"
-            j = _http_get(url).json()
-            return {
-                "Code": code,
-                "Name": j.get("stockName"),
-                "Price": float(j.get("closePrice") or 0),
-                "ChangeAmt": float(j.get("compareToPreviousClosePrice") or 0),
-                "ChangePct": float(j.get("fluctuationsRatio") or 0),
-                "MarketCap": float(j.get("marketValue") or 0),
-                "Sector": j.get("sectorName") or "기타",
-                "Market": "KOSPI" if "유가" in j.get("stockExchangeType", {}).get("nameKr", "") else "KOSDAQ",
-            }
-        except Exception:
-            return None
-
-    def get_bulk_snapshots(codes: list[str]):
+    # -----------------------------
+    # 데이터 수집 함수
+    # -----------------------------
+    @st.cache_data(ttl=1800)
+    def load_universe(market="KOSPI"):
+        """KRX 상장 목록 + 네이버 시세 API"""
+        krx = fdr.StockListing(market)
         rows = []
-        for code in codes:
-            info = get_snapshot_by_naver(code)
-            if info:
-                rows.append(info)
-            time.sleep(0.05)
+        for code, name, sector in zip(krx["Code"], krx["Name"], krx["Sector"]):
+            try:
+                url = f"https://api.stock.naver.com/stock/{code}/basic"
+                r = requests.get(url, headers={"User-Agent":"Mozilla/5.0"})
+                j = r.json()
+                rows.append({
+                    "Code": code,
+                    "Name": name,
+                    "Sector": sector if pd.notna(sector) else "기타",
+                    "Price": float(j.get("closePrice") or 0),
+                    "ChangeAmt": float(j.get("compareToPreviousClosePrice") or 0),
+                    "ChangePct": float(j.get("fluctuationsRatio") or 0),
+                    "MarketCap": float(j.get("marketValue") or 0),
+                    "Market": market
+                })
+                time.sleep(0.05)  # 네이버 API 요청 과부하 방지
+            except Exception:
+                continue
         return pd.DataFrame(rows)
 
-    def build_universe(market: str = "KOSPI"):
-        """시총/업종 정보 포함된 DataFrame"""
-        # KOSPI 005930(삼성전자), KOSDAQ 035720(카카오게임즈) 같은 주요 종목 코드 테스트용
-        example_codes = {
-            "KOSPI": ["005930", "000660", "035420", "068270", "051910"],   # 삼성전자, SK하이닉스, NAVER, 셀트리온, LG화학
-            "KOSDAQ": ["035720", "196170", "293490", "041510", "086900"],  # 카카오게임즈, 알테오젠, 카카오페이, 에스엠, 메디톡스
-        }
-        codes = example_codes[market]
-        df = get_bulk_snapshots(codes)
-        df = df[df["Market"] == market].reset_index(drop=True)
-        return df
+    # -----------------------------
+    # UI 컨트롤
+    # -----------------------------
+    market = st.radio("시장 선택", ["KOSPI", "KOSDAQ"], horizontal=True)
+    df = load_universe(market)
 
-    # ----------------------------------
-    # UI 옵션
-    # ----------------------------------
-    market = st.selectbox("시장 선택", ["KOSPI", "KOSDAQ"])
-    topn = st.slider("상위 N (시총 기준)", 5, 50, 10, 5)
-
-    # ----------------------------------
-    # 데이터 & 차트
-    # ----------------------------------
-    df_all = build_universe(market)
-    df_all = df_all.sort_values("MarketCap", ascending=False).head(topn)
-
-    if df_all.empty:
-        st.warning("데이터를 가져오지 못했습니다. 잠시 후 다시 시도해 주세요.")
+    if df.empty:
+        st.error("데이터를 불러오지 못했습니다. 잠시 후 다시 시도하세요.")
     else:
+        metric = st.selectbox("색상 기준", ["ChangePct", "ChangeAmt"], index=0)
+        topn = st.slider("시총 상위 종목 수", 50, 500, 200, 50)
+
+        df = df.sort_values("MarketCap", ascending=False).head(topn)
+
         fig = px.treemap(
-            df_all,
-            path=[px.Constant(market), "Sector", "Name"],
+            df,
+            path=["Sector", "Name"],
             values="MarketCap",
-            color="ChangePct",
-            color_continuous_scale=["#7f0000", "white", "#006d2c"],
-            range_color=[-5, 5],
-            hover_data=["Code", "Price", "ChangePct", "MarketCap"],
+            color=metric,
+            color_continuous_scale=["red", "white", "green"],
+            range_color=[-5, 5] if metric=="ChangePct" else None,
+            hover_data=["Code", "Price", "ChangePct", "MarketCap"]
         )
         fig.update_traces(root_color="lightgrey")
         fig.update_layout(margin=dict(t=30, l=0, r=0, b=0))
 
         st.plotly_chart(fig, use_container_width=True)
-        st.dataframe(df_all, use_container_width=True)
+        st.dataframe(df.head(50))
