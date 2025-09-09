@@ -9,7 +9,7 @@ st.set_page_config(page_title='투자독학 포트폴리오', page_icon=':teddy_
 st.image("https://github.com/hlynch1004-cyber/blank-app/blob/main/%EB%8D%B0%EC%9D%B4%ED%84%B0/%EB%A1%9C%EA%B3%A0.png?raw=true", width=500)
 
 # 탭 생성
-tab_home, tab_portfolio, tab_financials, tab_virtual_portfolio = st.tabs(["홈", "포트폴리오", "종목별 이익", "가상 포트폴리오"])
+tab_home, tab_portfolio, tab_financials, tab_virtual_portfolio, tab_marketmap = st.tabs(["홈", "포트폴리오", "종목별 이익", "가상 포트폴리오", "마켓 맵"])
 
 # ======= 홈 탭 =======
 with tab_home:
@@ -184,3 +184,95 @@ with tab_virtual_portfolio:
 
         df_quant = pd.DataFrame(results)
         st.dataframe(df_quant, use_container_width=True)
+
+# ======= 마켓맵 탭 =======
+with tab_marketmap:
+    st.header("코스피/코스닥 마켓 맵")
+
+    import requests
+    import time
+    import plotly.express as px
+
+    # ----------------------------------
+    # 유틸 함수
+    # ----------------------------------
+    def _http_get(url: str, headers: dict | None = None, params: dict | None = None):
+        h = {
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json, text/plain, */*",
+            "Referer": "https://finance.naver.com/",
+        }
+        if headers:
+            h.update(headers)
+        r = requests.get(url, headers=h, params=params, timeout=20)
+        r.raise_for_status()
+        return r
+
+    def get_snapshot_by_naver(code: str):
+        """네이버 현재가 요약 API"""
+        try:
+            url = f"https://api.stock.naver.com/stock/{code}/basic"
+            j = _http_get(url).json()
+            return {
+                "Code": code,
+                "Name": j.get("stockName"),
+                "Price": float(j.get("closePrice") or 0),
+                "ChangeAmt": float(j.get("compareToPreviousClosePrice") or 0),
+                "ChangePct": float(j.get("fluctuationsRatio") or 0),
+                "MarketCap": float(j.get("marketValue") or 0),
+                "Sector": j.get("sectorName") or "기타",
+                "Market": "KOSPI" if "유가" in j.get("stockExchangeType", {}).get("nameKr", "") else "KOSDAQ",
+            }
+        except Exception:
+            return None
+
+    def get_bulk_snapshots(codes: list[str]):
+        rows = []
+        for code in codes:
+            info = get_snapshot_by_naver(code)
+            if info:
+                rows.append(info)
+            time.sleep(0.05)
+        return pd.DataFrame(rows)
+
+    def build_universe(market: str = "KOSPI"):
+        """시총/업종 정보 포함된 DataFrame"""
+        # KOSPI 005930(삼성전자), KOSDAQ 035720(카카오게임즈) 같은 주요 종목 코드 테스트용
+        example_codes = {
+            "KOSPI": ["005930", "000660", "035420", "068270", "051910"],   # 삼성전자, SK하이닉스, NAVER, 셀트리온, LG화학
+            "KOSDAQ": ["035720", "196170", "293490", "041510", "086900"],  # 카카오게임즈, 알테오젠, 카카오페이, 에스엠, 메디톡스
+        }
+        codes = example_codes[market]
+        df = get_bulk_snapshots(codes)
+        df = df[df["Market"] == market].reset_index(drop=True)
+        return df
+
+    # ----------------------------------
+    # UI 옵션
+    # ----------------------------------
+    market = st.selectbox("시장 선택", ["KOSPI", "KOSDAQ"])
+    topn = st.slider("상위 N (시총 기준)", 5, 50, 10, 5)
+
+    # ----------------------------------
+    # 데이터 & 차트
+    # ----------------------------------
+    df_all = build_universe(market)
+    df_all = df_all.sort_values("MarketCap", ascending=False).head(topn)
+
+    if df_all.empty:
+        st.warning("데이터를 가져오지 못했습니다. 잠시 후 다시 시도해 주세요.")
+    else:
+        fig = px.treemap(
+            df_all,
+            path=[px.Constant(market), "Sector", "Name"],
+            values="MarketCap",
+            color="ChangePct",
+            color_continuous_scale=["#7f0000", "white", "#006d2c"],
+            range_color=[-5, 5],
+            hover_data=["Code", "Price", "ChangePct", "MarketCap"],
+        )
+        fig.update_traces(root_color="lightgrey")
+        fig.update_layout(margin=dict(t=30, l=0, r=0, b=0))
+
+        st.plotly_chart(fig, use_container_width=True)
+        st.dataframe(df_all, use_container_width=True)
